@@ -1,5 +1,8 @@
 # Data Assessment - Take-Home Solutions
 
+> **Demo video (screen recording of all three solutions running end-to-end):**
+> [https://www.loom.com/share/2fc8adc905b74129bf9d85416ff1d0f8](https://www.loom.com/share/2fc8adc905b74129bf9d85416ff1d0f8)
+
 Solutions to the three-question take-home assessment:
 
 | # | Question | Tech | Location |
