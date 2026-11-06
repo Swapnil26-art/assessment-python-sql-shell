@@ -105,8 +105,8 @@ Without a local MySQL client you can use the helper
 
 ```bash
 cd question-2-rfam-sql
-python run_queries.py          # Q1 + Q2 (fast-ish, Q2 takes ~2 min)
-python run_queries.py --all    # also Q3 (heavy join, ~5-8 min on the shared server)
+python run_queries.py          # Q1 (+ Q2, ~10 s - 2.5 min: server-side scan)
+python run_queries.py --all    # also the Q3 heavy join (~4 min on average)
 ```
 
 ### Verified answers (from the live database)
@@ -207,12 +207,22 @@ Verified run: **503 companies** printed, oldest at the top
 Record each command in a terminal (OBS Studio / Windows Game Capture /
 `asciinema rec`) using the commands listed above — they run end-to-end as
 written, and each folder's committed sample output shows exactly what you
-should see. Approximate runtimes for planning your recording:
+should see. Recordings are kept in [`recordings/`](recordings/) using the
+naming pattern below:
+
+```
+recordings/
+├── q1-scraper-demo.mp4
+├── q2-rfam-sql-demo.mp4
+└── q3-shell-report-demo.mp4
+```
+
+Approximate runtimes for planning your recording:
 
 | Script | Time |
 |--------|------|
 | Q1 scraper (3 pages) | ~10 s |
-| Q2 `python run_queries.py` (Q1+Q2) | ~10 s–2 min (server-side scan) |
+| Q2 `python run_queries.py` (Q1+Q2) | ~10 s–2.5 min (server-side scan) |
 | Q2 `python run_queries.py --all` | ~4 min (adds the Q3 heavy join) |
 | Q3 shell script | ~2–4 s |
 
