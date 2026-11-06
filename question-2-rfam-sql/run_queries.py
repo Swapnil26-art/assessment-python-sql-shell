@@ -45,11 +45,15 @@ Q2 = (
 
 Q3 = (
     "Families by longest sequence > 1,000,000 nt - page 9, 15 per page",
+    # Equivalent to the canonical form in rfam_queries.sql but ~2x faster on
+    # the shared server (rfamseq is pre-filtered to length > 1e6, which can
+    # only relax the join, never the per-family maxima that matter).
     "SELECT f.rfam_acc AS family_accession, f.rfam_id AS family_name, "
     "MAX(r.length) AS max_sequence_length "
     "FROM family f "
     "JOIN full_region fr ON fr.rfam_acc = f.rfam_acc "
-    "JOIN rfamseq r ON r.rfamseq_acc = fr.rfamseq_acc "
+    "JOIN (SELECT rfamseq_acc, length FROM rfamseq WHERE length > 1000000) r "
+    "  ON r.rfamseq_acc = fr.rfamseq_acc "
     "WHERE fr.is_significant = 1 "
     "GROUP BY f.rfam_acc, f.rfam_id "
     "HAVING MAX(r.length) > 1000000 "
@@ -84,9 +88,9 @@ def main() -> int:
             run(cur, f"Q1: {Q1[0]}", Q1[1])
             run(cur, f"Q2: {Q2[0]}", Q2[1])
             if args.all:
-                run(cur, f"Q3: {Q3[0]} (this joins ~millions of rows, be patient)", Q3[1])
+                run(cur, f"Q3: {Q3[0]} (heavy join, be patient)", Q3[1])
             elif not args.all:
-                print("\n(Q3 skipped; run with --all to execute it - takes ~5-8 min)")
+                print("\n(Q3 skipped; run with --all to execute it - takes ~3-8 min)")
     finally:
         conn.close()
     return 0

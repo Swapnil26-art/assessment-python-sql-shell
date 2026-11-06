@@ -154,9 +154,13 @@ ORDER BY max_sequence_length DESC, family_accession ASC
 LIMIT 15 OFFSET 120;   -- page 9 => skip (9-1)*15 = 120 rows
 ```
 
-Page 9 rows (verified live) start at `RF01284 snoR8a ... 836514780` and
-continue through `RF04335 Plastid-rpl20` — plus a stable tie-break on
-accession so repeated runs paginate identically.
+Page 9 rows (verified live) run from `RF01284 snoR8a` through
+`RF04335 Plastid-rpl20`, all maxing out at 836,514,780 nt (that durum-wheat
+contig again — many families are annotated on it), plus a stable tie-break
+on accession so repeated runs paginate identically. `rfam_queries.sql`
+also contains a pre-filtered variant that returns the identical page in
+about half the time (`python run_queries.py --all` uses it; both were run
+and compared during development).
 
 ## 3. S&P 500 companies by founding year
 
@@ -208,8 +212,8 @@ should see. Approximate runtimes for planning your recording:
 | Script | Time |
 |--------|------|
 | Q1 scraper (3 pages) | ~10 s |
-| Q2 `python run_queries.py` (Q1+Q2) | ~2–3 min (server-side join) |
-| Q2 `python run_queries.py --all` | ~6–10 min (skip or demo `--pages`-style by live-previewing `rfam_queries.sql` in MySQL Workbench) |
+| Q2 `python run_queries.py` (Q1+Q2) | ~10 s–2 min (server-side scan) |
+| Q2 `python run_queries.py --all` | ~4 min (adds the Q3 heavy join) |
 | Q3 shell script | ~2–4 s |
 
 ## Dependencies

@@ -82,7 +82,12 @@ LIMIT 1;
 -- full-search regions, then paginate.
 --
 -- Runtime note: joins several million rows of full_region against rfamseq,
--- so expect ~5-8 minutes on the shared public server.
+-- so expect ~4-8 minutes on the shared public server. (On one attempt the
+-- server dropped the connection mid-query; the equivalent-but-faster form
+-- kept below as "Q3-alternative" finished in ~3.5 min and returns the
+-- identical 15 rows, because a per-family max > 1,000,000 can only come
+-- from a sequence that is itself longer than 1,000,000 - so rfamseq can be
+-- pre-filtered once before the join instead of being fully joined.)
 
 SELECT f.rfam_acc                 AS family_accession,
        f.rfam_id                  AS family_name,
@@ -99,3 +104,21 @@ ORDER BY max_sequence_length DESC,
                                           -- paginate in the same order
 LIMIT 15
 OFFSET 120;                              -- page 9 = (9-1) * 15 rows skipped
+
+-- ---------------------------------------------------------------------------
+-- Q3-alternative (same result page, ~2x faster on the shared server)
+-- ---------------------------------------------------------------------------
+SELECT f.rfam_acc                 AS family_accession,
+       f.rfam_id                  AS family_name,
+       MAX(r.length)              AS max_sequence_length
+FROM family  AS f
+JOIN full_region AS fr ON fr.rfam_acc  = f.rfam_acc
+JOIN (SELECT rfamseq_acc, length FROM rfamseq WHERE length > 1000000) AS r
+     ON r.rfamseq_acc = fr.rfamseq_acc
+WHERE fr.is_significant = 1
+GROUP BY f.rfam_acc, f.rfam_id
+HAVING MAX(r.length) > 1000000
+ORDER BY max_sequence_length DESC,
+         family_accession ASC
+LIMIT 15
+OFFSET 120;
