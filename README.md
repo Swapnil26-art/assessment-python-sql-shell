@@ -202,29 +202,33 @@ Verified run: **503 companies** printed, oldest at the top
 * **Pure POSIX-ish tooling** (bash + curl + awk + sort): no jq/python
   dependency, runs anywhere including Git Bash on Windows.
 
-## Screen recordings
+## Screen recording
 
-Record each command in a terminal (OBS Studio / Windows Game Capture /
-`asciinema rec`) using the commands listed above - they run end-to-end as
-written, and each folder's committed sample output shows exactly what you
-should see. Recordings are kept in [`recordings/`](recordings/) using the
-naming pattern below:
+The terminal session above is demonstrated end-to-end in one screen recording
+(watch it here):
+**[Demo video - all three questions](https://www.loom.com/share/2fc8adc905b74129bf9d85416ff1d0f8)**
 
-```
-recordings/
-├── q1-scraper-demo.mp4
-├── q2-rfam-sql-demo.mp4
-└── q3-shell-report-demo.mp4
-```
+It shows, in order:
 
-Approximate runtimes for planning your recording:
+1. **Q1 (Python scraper)** - fetching MD Computers search results for
+   "external harddrive", all 3 pages, output as a formatted table and as JSON
+   (46 products, matching the site's own "of 46" count)
+2. **Q3 (bash report)** - the shell script downloading the S&P 500 CSV and
+   listing all 503 companies sorted by founding year (1792 -> 2026)
+3. **Q2 (Rfam SQL)** - `run_queries.py` executing the three queries against
+   the live Rfam public MySQL server and printing each answer: Q1 -> 326,
+   Q2 -> Triticum durum / LT934116.1 / 836,514,780 nt, Q3 -> the page-9
+   fifteen families with max sequence length 836,514,780 nt. The middle
+   waiting periods are server-side scan/join time (~4-6 min total) that
+   were trimmed from the video.
+
+Approximate full runtimes, for reference:
 
 | Script | Time |
 |--------|------|
 | Q1 scraper (3 pages) | ~10 s |
-| Q2 `python run_queries.py` (Q1+Q2) | ~10 s - 2.5 min (server-side scan) |
-| Q2 `python run_queries.py --all` | ~4 min (adds the Q3 heavy join) |
 | Q3 shell script | ~2 - 4 s |
+| Q2 `python run_queries.py --all` | ~4 min (dominated by server-side work) |
 
 ## Dependencies
 
